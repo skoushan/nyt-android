@@ -1,10 +1,12 @@
 package com.skoushan.nyt;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,16 +26,35 @@ import retrofit.client.Response;
 
 public class ArticleListFragment extends ListFragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private MainActivity mainActivity;
     private SwipeRefreshLayout swipeLayout;
     private ArticleListAdapter adapter;
     private Queue<DoneInflatingListener> doneInflatingListeners = new LinkedList<DoneInflatingListener>();
 
+    /**
+     * The fragment argument representing the section number for this
+     * fragment.
+     */
+    private static final String ARG_SECTION_NUMBER = "section_number";
+
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+    public static ArticleListFragment newInstance(String section) {
+        ArticleListFragment fragment = new ArticleListFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_SECTION_NUMBER, section);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public ArticleListFragment() {
+
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mainActivity = (MainActivity) getActivity();
 
         adapter = new ArticleListAdapter(getActivity());
         setListAdapter(adapter);
@@ -103,15 +124,15 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
         }
 
         public void refresh() {
-            mainActivity.service.listArticles(new Callback<List<Article>>() {
+            Server.get().listArticles(getArguments().getString(ARG_SECTION_NUMBER), new Callback<List<Article>>() {
                 @Override
                 public void success(List<Article> retrievedArticles, Response response) {
                     articles.clear();
                     for (Article article : retrievedArticles) {
                         articles.add(article);
                         notifyDataSetChanged();
-                        swipeLayout.setRefreshing(false);
                     }
+                    swipeLayout.setRefreshing(false);
                 }
 
                 @Override
@@ -128,7 +149,7 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.list_item_broadcast, parent, false);
+                convertView = inflater.inflate(R.layout.list_item_article, parent, false);
 
                 viewHolder = new ViewHolder();
                 viewHolder.articleTitle = (TextView) convertView.findViewById(R.id.article_title);
@@ -140,9 +161,16 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.articleTitle.setText(getItem(position).title);
+            viewHolder.articleTitle.setText(Html.fromHtml(getItem(position).title));
             return convertView;
         }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((MainActivity) activity).onSectionAttached(
+                getArguments().getString(ARG_SECTION_NUMBER));
     }
 
     @Override
