@@ -15,7 +15,8 @@ public class Server {
     public static ServerInterface get() {
         if (server == null) {
             RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setEndpoint("http://192.168.1.123:3000/api")
+//                    .setEndpoint("http://limitless-tundra-9951.herokuapp.com/api")
+                    .setEndpoint("http://192.168.43.194:3000/api")
                     .build();
 
             server = restAdapter.create(ServerInterface.class);

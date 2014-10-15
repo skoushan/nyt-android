@@ -13,7 +13,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -50,6 +53,11 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
 
     public ArticleListFragment() {
 
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
     }
 
     @Override
@@ -130,8 +138,8 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
                     articles.clear();
                     for (Article article : retrievedArticles) {
                         articles.add(article);
-                        notifyDataSetChanged();
                     }
+                    notifyDataSetChanged();
                     swipeLayout.setRefreshing(false);
                 }
 
@@ -161,7 +169,25 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.articleTitle.setText(Html.fromHtml(getItem(position).title));
+            Article article = getItem(position);
+
+            String url = null;
+            for (int i = 0; i < article.multimedia.length; i++) {
+                if (article.multimedia[i].format.equals("Standard Thumbnail")) {
+                    url = article.multimedia[i].url;
+                    break;
+                }
+            }
+            if (url != null) {
+                viewHolder.articleImage.setVisibility(View.VISIBLE);
+                Picasso.with(context).load(url).into(viewHolder.articleImage);
+            } else {
+                viewHolder.articleImage.setVisibility(View.GONE);
+            }
+
+            viewHolder.articleAbstract.setText(article.updated_date);
+
+            viewHolder.articleTitle.setText(Html.fromHtml(article.title));
             return convertView;
         }
     }
