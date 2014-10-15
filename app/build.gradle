@@ -24,6 +24,10 @@ android {
             setRoot('src/test')
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 robolectric {
