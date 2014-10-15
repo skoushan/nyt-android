@@ -1,4 +1,4 @@
-package com.skoushan.nyt;
+package com.skoushan.nyt.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,6 +6,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.skoushan.nyt.models.TimesSearchArticle;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -24,7 +25,7 @@ public class TimesServer {
         if (server == null) {
             Gson gson =
                     new GsonBuilder()
-                            .registerTypeAdapter(Response.class, new MyDeserializer())
+                            .registerTypeAdapter(Response.class, new TimesSearchDeserializer())
                             .create();
 
             RestAdapter restAdapter = new RestAdapter.Builder()
@@ -37,11 +38,17 @@ public class TimesServer {
         return server;
     }
 
-    public class Response {
-        List<TimesArticle> docs;
+    public interface TimesServerInterface {
+        @Headers("Accept: application/json")
+        @GET("/svc/search/v2/articlesearch.json?api-key=5837f028db00e46daeaa2f8b41080f2a%3A3%3A69972922")
+        void search(@Query("q") String query, Callback<Response> cb);
     }
 
-    public static class MyDeserializer implements JsonDeserializer<Response> {
+    public class Response {
+        public List<TimesSearchArticle> docs;
+    }
+
+    public static class TimesSearchDeserializer implements JsonDeserializer<Response> {
         @Override
         public Response deserialize(JsonElement je, Type type, JsonDeserializationContext jdc)
                 throws JsonParseException {
@@ -53,11 +60,5 @@ public class TimesServer {
             return new Gson().fromJson(content, Response.class);
 
         }
-    }
-
-    public interface TimesServerInterface {
-        @Headers("Accept: application/json")
-        @GET("/svc/search/v2/articlesearch.json?api-key=5837f028db00e46daeaa2f8b41080f2a%3A3%3A69972922")
-        void search(@Query("q") String query, Callback<Response> cb);
     }
 }

@@ -2,6 +2,8 @@ package com.skoushan.nyt;
 
 import android.app.Activity;
 
+import com.skoushan.nyt.activities.MainActivity;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;

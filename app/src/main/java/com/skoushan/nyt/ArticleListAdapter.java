@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.skoushan.nyt.models.Article;
+import com.skoushan.nyt.models.Multimedia;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ public class ArticleListAdapter extends BaseAdapter implements ListAdapter {
     List<Article> articles = new ArrayList<Article>();
     String[] urls;
 
-    ArticleListAdapter(Context c) {
+    public ArticleListAdapter(Context c) {
         this.context = c;
     }
 

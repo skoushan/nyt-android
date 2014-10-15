@@ -1,4 +1,4 @@
-package com.skoushan.nyt;
+package com.skoushan.nyt.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,12 +10,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-public class ArticleView extends Activity {
+public class SingleArticleActivity extends Activity {
 
     private static String INTENT_URL = "INTENT_URL", INTENT_NAME = "INTENT_NAME";
 
     public static void newInstance(Context c, String url, String name) {
-        c.startActivity(new Intent(c, ArticleView.class)
+        c.startActivity(new Intent(c, SingleArticleActivity.class)
                 .putExtra(INTENT_URL, url)
                 .putExtra(INTENT_NAME, name));
     }

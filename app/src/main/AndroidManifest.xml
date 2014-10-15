@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,18 +22,18 @@
             </intent-filter>
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".SearchResultsActivity" />
+                android:value=".activities.SearchResultsActivity" />
         </activity>
         <activity
-            android:name=".ArticleView"
-            android:parentActivityName=".MainActivity">
+            android:name=".activities.SingleArticleActivity"
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.skoushan.nyc.MainActivity" />
         </activity>
         <activity
-            android:name=".SearchResultsActivity"
-            android:parentActivityName=".MainActivity">
+            android:name=".activities.SearchResultsActivity"
+            android:parentActivityName=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>

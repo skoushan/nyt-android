@@ -1,4 +1,4 @@
-package com.skoushan.nyt;
+package com.skoushan.nyt.activities;
 
 import android.app.ActionBar;
 import android.app.SearchManager;
@@ -9,6 +9,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.widget.SearchView;
+
+import com.skoushan.nyt.fragments.ArticleListFragment;
+import com.skoushan.nyt.fragments.NavigationDrawerFragment;
+import com.skoushan.nyt.R;
 
 public class MainActivity extends FragmentActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {

@@ -1,4 +1,4 @@
-package com.skoushan.nyt;
+package com.skoushan.nyt.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,6 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.skoushan.nyt.ArticleListAdapter;
+import com.skoushan.nyt.R;
+import com.skoushan.nyt.api.Server;
+import com.skoushan.nyt.activities.MainActivity;
+import com.skoushan.nyt.activities.SingleArticleActivity;
+import com.skoushan.nyt.models.Article;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,16 +32,8 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
     private ArticleListAdapter adapter;
     private Queue<DoneInflatingListener> doneInflatingListeners = new LinkedList<DoneInflatingListener>();
 
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String ARG_SECTION_NAME = "section_number";
+    private static final String ARG_SECTION_NAME = "section_name";
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
     public static ArticleListFragment newInstance(String section) {
         ArticleListFragment fragment = new ArticleListFragment();
         Bundle args = new Bundle();
@@ -42,13 +42,9 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
         return fragment;
     }
 
-    public ArticleListFragment() {
-
-    }
-
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        ArticleView.newInstance(getActivity(), adapter.getItem(position).url, adapter.getItem(position).title);
+        SingleArticleActivity.newInstance(getActivity(), adapter.getItem(position).url, adapter.getItem(position).title);
     }
 
     @Override
@@ -77,11 +73,6 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
 
         swipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
-//        swipeLayout.setColorSchemeResources(
-//                R.color.megaphone_red,
-//                R.color.tab_grey,
-//                R.color.megaphone_red,
-//                R.color.tab_grey);
 
         while (doneInflatingListeners.size() != 0) {
             doneInflatingListeners.element().done();
@@ -109,6 +100,7 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
 
             @Override
             public void failure(RetrofitError error) {
+                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
                 error.printStackTrace();
                 swipeLayout.setRefreshing(false);
             }

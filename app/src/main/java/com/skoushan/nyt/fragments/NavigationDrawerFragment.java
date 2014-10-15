@@ -1,4 +1,4 @@
-package com.skoushan.nyt;
+package com.skoushan.nyt.fragments;
 
 
 import android.app.ActionBar;
@@ -20,6 +20,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.skoushan.nyt.R;
+import com.skoushan.nyt.api.Server;
+import com.skoushan.nyt.models.Section;
 
 import java.util.List;
 
@@ -121,6 +126,7 @@ public class NavigationDrawerFragment extends Fragment {
 
             @Override
             public void failure(RetrofitError error) {
+                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
                 error.printStackTrace();
             }
         });
