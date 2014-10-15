@@ -57,7 +57,7 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
+        ArticleView.newInstance(getActivity(), adapter.getItem(position).url, adapter.getItem(position).title);
     }
 
     @Override
