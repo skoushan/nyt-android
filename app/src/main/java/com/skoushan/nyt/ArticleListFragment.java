@@ -1,24 +1,15 @@
 package com.skoushan.nyt;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -37,7 +28,7 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
      * The fragment argument representing the section number for this
      * fragment.
      */
-    private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String ARG_SECTION_NAME = "section_number";
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -46,7 +37,7 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
     public static ArticleListFragment newInstance(String section) {
         ArticleListFragment fragment = new ArticleListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_SECTION_NUMBER, section);
+        args.putString(ARG_SECTION_NAME, section);
         fragment.setArguments(args);
         return fragment;
     }
@@ -100,107 +91,27 @@ public class ArticleListFragment extends ListFragment implements SwipeRefreshLay
         return rootView;
     }
 
-    static class ViewHolder {
-        TextView articleTitle;
-        TextView articleAbstract;
-        ImageView articleImage;
-    }
-
-    private class ArticleListAdapter extends BaseAdapter implements ListAdapter {
-
-        private final Context context;
-
-        List<Article> articles = new ArrayList<Article>();
-
-        ArticleListAdapter(Context c) {
-            this.context = c;
-        }
-
-        @Override
-        public int getCount() {
-            return articles.size();
-        }
-
-        @Override
-        public Article getItem(int i) {
-            return articles.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return articles.get(i).id.hashCode();
-        }
-
-        public void refresh() {
-            Server.get().listArticles(getArguments().getString(ARG_SECTION_NUMBER), new Callback<List<Article>>() {
-                @Override
-                public void success(List<Article> retrievedArticles, Response response) {
-                    articles.clear();
-                    for (Article article : retrievedArticles) {
-                        articles.add(article);
-                    }
-                    notifyDataSetChanged();
-                    swipeLayout.setRefreshing(false);
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    error.printStackTrace();
-                }
-            });
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            final ViewHolder viewHolder;
-
-            if (convertView == null) {
-                LayoutInflater inflater = (LayoutInflater) context
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.list_item_article, parent, false);
-
-                viewHolder = new ViewHolder();
-                viewHolder.articleTitle = (TextView) convertView.findViewById(R.id.article_title);
-                viewHolder.articleImage = (ImageView) convertView.findViewById(R.id.article_image);
-                viewHolder.articleAbstract = (TextView) convertView.findViewById(R.id.article_abstract);
-
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-
-            Article article = getItem(position);
-
-            String url = null;
-            for (int i = 0; i < article.multimedia.length; i++) {
-                if (article.multimedia[i].format.equals("Standard Thumbnail")) {
-                    url = article.multimedia[i].url;
-                    break;
-                }
-            }
-            if (url != null) {
-                viewHolder.articleImage.setVisibility(View.VISIBLE);
-                Picasso.with(context).load(url).into(viewHolder.articleImage);
-            } else {
-                viewHolder.articleImage.setVisibility(View.GONE);
-            }
-
-            viewHolder.articleAbstract.setText(article.updated_date);
-
-            viewHolder.articleTitle.setText(Html.fromHtml(article.title));
-            return convertView;
-        }
-    }
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(
-                getArguments().getString(ARG_SECTION_NUMBER));
+                getArguments().getString(ARG_SECTION_NAME));
     }
 
     @Override
     public void onRefresh() {
-        adapter.refresh();
+        Server.get().listArticles(getArguments().getString(ARG_SECTION_NAME), new Callback<List<Article>>() {
+            @Override
+            public void success(List<Article> retrievedArticles, Response response) {
+                adapter.setData(retrievedArticles);
+                swipeLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                error.printStackTrace();
+                swipeLayout.setRefreshing(false);
+            }
+        });
     }
 }
